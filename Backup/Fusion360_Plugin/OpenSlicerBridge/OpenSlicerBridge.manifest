@@ -1,0 +1,13 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"id":	"e8c94b21-7f44-4d9a-9c12-openslicer01",
+	"author":	"OpenSlicer Studio",
+	"description":	{
+		"":	"Live 1-Click & Auto-Save STL Bridge from Autodesk Fusion 360 to OpenSlicer Studio."
+	},
+	"version":	"1.0.0",
+	"runOnStartup":	true,
+	"supportedOS":	"windows|mac",
+	"editEnabled":	true
+}

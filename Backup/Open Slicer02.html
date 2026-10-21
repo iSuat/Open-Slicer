@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenSlicer Studio v2.0 — Clean Room Edition</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; user-select: none; }
+    body { display: flex; height: 100vh; background: #141417; color: #e4e4e7; overflow: hidden; }
+
+    /* Tarayıcının varsayılan sayı oklarını tamamen gizle */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* Sol Panel */
+    #sidebar { width: 335px; background: #202024; border-right: 1px solid #34343a; display: flex; flex-direction: column; overflow-y: auto; z-index: 10; padding-bottom: 24px; }
+    #sidebar::-webkit-scrollbar { width: 6px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+
+    .brand { padding: 12px 14px; background: #18181b; border-bottom: 1px solid #34343a; display: flex; align-items: center; justify-content: space-between; }
+    .brand-title { font-size: 15px; font-weight: 700; color: #f97316; display: flex; align-items: center; gap: 6px; }
+    .brand-badge { font-size: 10px; background: #27272a; color: #a1a1aa; padding: 2px 6px; border-radius: 4px; border: 1px solid #3f3f46; }
+
+    /* Kutu ve Accordion Yapısı */
+    .panel-box { border-bottom: 1px solid #34343a; background: #202024; }
+    .box-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; color: #d4d4d8; cursor: pointer; background: #252529; transition: 0.15s; }
+    .box-header:hover { background: #2c2c31; }
+    .box-header.static { cursor: default; background: #252529; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .icon-slot { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; background: #34343a; border-radius: 4px; font-size: 11px; color: #f97316; }
+    .caret { font-size: 10px; color: #a1a1aa; transition: transform 0.2s; }
+    .panel-box.collapsed .caret { transform: rotate(-90deg); }
+    .panel-box.collapsed .box-body { display: none; }
+    .box-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 9px; background: #1c1c20; }
+
+    /* Satırlar ve Form Elemanları */
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: #cbd5e1; }
+    .row-left { display: flex; align-items: center; gap: 6px; }
+    
+    select, input[type="text"] { background: #27272a; border: 1px solid #45454e; color: #f4f4f5; padding: 5px 8px; border-radius: 4px; font-size: 12px; outline: none; }
+    select:focus, input[type="number"]:focus { border-color: #f97316; }
+
+    /* Dışarı Alınmış Özel Rakam Kutusu (Num-Wrap) */
+    .num-wrap { display: inline-flex; align-items: center; gap: 3px; }
+    .num-wrap input[type="number"] {
+      width: 78px; height: 26px; background: #27272a; border: 1px solid #45454e;
+      color: #fff; padding: 0 7px; border-radius: 4px; font-size: 12px; text-align: right; outline: none;
+    }
+    .spin-col { display: flex; flex-direction: column; gap: 2px; }
+    .spin-btn {
+      width: 17px; height: 12px; background: #34343a; border: 1px solid #4b4b55;
+      color: #d4d4d8; font-size: 7px; line-height: 1; display: flex; align-items: center;
+      justify-content: center; border-radius: 2px; cursor: pointer; padding: 0;
+    }
+    .spin-btn:hover { background: #f97316; color: #fff; border-color: #f97316; }
+
+    /* Butonlar */
+    .btn { background: #f97316; color: #fff; border: none; padding: 7px 11px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+    .btn:hover { background: #ea580c; }
+    .btn-sec { background: #34343a; color: #e4e4e7; border: 1px solid #4b4b55; }
+    .btn-sec:hover { background: #45454e; }
+    .btn-icon { width: 28px; height: 28px; padding: 0; font-size: 13px; }
+    .btn-xs { padding: 4px 7px; font-size: 11px; }
+
+    .file-zone { display: flex; gap: 6px; align-items: center; }
+    .file-label { flex: 1; background: #27272a; border: 1px dashed #52525b; padding: 6px 8px; border-radius: 4px; font-size: 11px; color: #e4e4e7; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-label:hover { border-color: #f97316; color: #f97316; }
+
+    .adv-box { background: #161619; border: 1px solid #2e2e34; border-radius: 4px; padding: 9px; display: none; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .adv-box.open { display: flex; }
+
+    input[type="checkbox"], input[type="radio"] { accent-color: #f97316; cursor: pointer; width: 14px; height: 14px; }
+    input[type="range"] { width: 100%; accent-color: #f97316; cursor: pointer; }
+
+    /* Orta 3D Sahne */
+    #viewport3d { flex: 1; position: relative; background: radial-gradient(circle at center, #26262b 0%, #121215 100%); }
+    
+    #toolbar3d {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(32, 32, 36, 0.94); backdrop-filter: blur(8px);
+      border: 1px solid #45454e; border-radius: 7px; padding: 5px;
+      display: flex; gap: 5px; z-index: 20; box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+    }
+    .t-btn { background: transparent; color: #d4d4d8; border: 1px solid transparent; padding: 6px 10px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .t-btn:hover { background: #34343a; color: #fff; }
+    .t-btn.active { background: #f97316; color: #fff; }
+    .t-sep { width: 1px; background: #45454e; margin: 2px 3px; }
+
+    #bannerMsg {
+      position: absolute; top: 62px; left: 50%; transform: translateX(-50%);
+      background: #2563eb; color: #fff; padding: 6px 14px; border-radius: 18px;
+      font-size: 12px; font-weight: 600; display: none; z-index: 20;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    #errorToast {
+      position: absolute; top: 62px; left: 50%; transform: translateX(-50%);
+      background: #dc2626; color: #fff; padding: 8px 16px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; display: none; z-index: 30;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6); max-width: 440px; text-align: center;
+    }
+
+    .footer-hint { position: absolute; bottom: 10px; left: 12px; background: rgba(20,20,23,0.85); padding: 6px 10px; border-radius: 5px; border: 1px solid #34343a; font-size: 11px; color: #a1a1aa; pointer-events: none; }
+
+    /* Sağ 2D Kesim Planları Paneli */
+    #viewport2d { width: 440px; background: #1a1a1e; border-left: 1px solid #34343a; display: flex; flex-direction: column; }
+    .panel2d-head { padding: 11px 14px; background: #252529; border-bottom: 1px solid #34343a; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; }
+    #svgContainer { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .sheet-card { background: #fff; border-radius: 4px; padding: 8px; width: 100%; box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+    .sheet-meta { font-size: 11px; color: #3f3f46; font-weight: 600; margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .legend { display: flex; gap: 10px; font-size: 11px; color: #a1a1aa; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  </style>
+
+  <!-- Kütüphaneler: Three.js, Loaders (STL, OBJ), JSZip (3MF için) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+  <!-- ================= SOL PANEL ================= -->
+  <div id="sidebar">
+    <div class="brand">
+      <div class="brand-title">🔶 OpenSlicer Studio</div>
+      <span class="brand-badge">v2.0 Pro</span>
+    </div>
+
+    <!-- 1. KUTU: MODEL & OBJECT SIZE -->
+    <div class="panel-box">
+      <div class="box-header static">
+        <div class="header-left"><span class="icon-slot">📦</span> 1. Model & Object Size</div>
+        <div style="display:flex; gap:4px;">
+          <button class="btn btn-sec btn-icon" id="btnToggleGhost" title="Modeli Gizle / Göster">👁️</button>
+          <button class="btn btn-sec btn-icon" id="btnResetModel" title="Modeli İlk Haline Sıfırla">↺</button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <span>Hazır Model</span>
+          <select id="presetSelect" style="width:175px;">
+            <option value="cone">9_Rear_Cone (Koni/Büst)</option>
+            <option value="lowPolyRock">Asimetrik Kaya</option>
+            <option value="sphere">Küre (Sphere)</option>
+            <option value="torusKnot">Torus Heykel</option>
+          </select>
+        </div>
+        <div class="file-zone">
+          <label class="file-label" for="fileInput" id="fileNameLabel">📂 Dosya Seç (.STL, .OBJ, .3MF)</label>
+          <input type="file" id="fileInput" accept=".stl,.obj,.3mf" style="display:none;" />
+        </div>
+
+        <div class="row" style="margin-top:4px; padding-top:8px; border-top:1px solid #2e2e34;">
+          <span>Units (Birim)</span>
+          <select id="unitSelect" style="width:100px;">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="in">inch</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <span>Height (Yükseklik Z)</span>
+          <div class="num-wrap">
+            <input type="number" id="dimZ" value="120" step="1" min="1">
+            <div class="spin-col"><button class="spin-btn" data-target="dimZ" data-dir="1">▲</button><button class="spin-btn" data-target="dimZ" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Width (Genişlik X)</span>
+          <div class="num-wrap">
+            <input type="number" id="dimX" value="90" step="1" min="1">
+            <div class="spin-col"><button class="spin-btn" data-target="dimX" data-dir="1">▲</button><button class="spin-btn" data-target="dimX" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Length (Derinlik Y)</span>
+          <div class="num-wrap">
+            <input type="number" id="dimY" value="90" step="1" min="1">
+            <div class="spin-col"><button class="spin-btn" data-target="dimY" data-dir="1">▲</button><button class="spin-btn" data-target="dimY" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+
+        <div class="row" style="padding-top:4px;">
+          <label class="row-left" style="cursor:pointer;">
+            <input type="checkbox" id="chkOriginalSize"> <span>Original Size</span>
+          </label>
+          <label class="row-left" style="cursor:pointer;">
+            <input type="checkbox" id="chkUniformScale" checked> <span>Uniform Scale</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KUTU: MANUFACTURING SETTINGS -->
+    <div class="panel-box">
+      <div class="box-header static">
+        <div class="header-left"><span class="icon-slot">⚙️</span> 2. Manufacturing Settings</div>
+        <button class="btn btn-sec btn-xs" id="btnToggleAdv">Gelişmiş ▾</button>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <span>Sheet Length (Boy)</span>
+          <div class="num-wrap">
+            <input type="number" id="sheetL" value="400" step="10" min="10">
+            <div class="spin-col"><button class="spin-btn" data-target="sheetL" data-dir="1">▲</button><button class="spin-btn" data-target="sheetL" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Sheet Width (En)</span>
+          <div class="num-wrap">
+            <input type="number" id="sheetW" value="300" step="10" min="10">
+            <div class="spin-col"><button class="spin-btn" data-target="sheetW" data-dir="1">▲</button><button class="spin-btn" data-target="sheetW" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Thickness (Kalınlık)</span>
+          <div class="num-wrap">
+            <input type="number" id="matThick" value="3.0" step="0.5" min="0.2">
+            <div class="spin-col"><button class="spin-btn" data-target="matThick" data-dir="1">▲</button><button class="spin-btn" data-target="matThick" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row" title="0: Tüm katmanlar dolu | 1: Bir var bir yok | 2: Bir var iki yok">
+          <span>Aradan Katman Eksilt</span>
+          <div class="num-wrap">
+            <input type="number" id="skipCount" value="0" step="1" min="0" max="10">
+            <div class="spin-col"><button class="spin-btn" data-target="skipCount" data-dir="1">▲</button><button class="spin-btn" data-target="skipCount" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+
+        <!-- Advanced (Gelişmiş) Alanı -->
+        <div class="adv-box" id="advBox">
+          <div class="row">
+            <span>Margin (Kenar Payı)</span>
+            <div class="num-wrap">
+              <input type="number" id="matMargin" value="5.0" step="1" min="0">
+              <div class="spin-col"><button class="spin-btn" data-target="matMargin" data-dir="1">▲</button><button class="spin-btn" data-target="matMargin" data-dir="-1">▼</button></div>
+            </div>
+          </div>
+          <div class="row">
+            <span>Slot Offset (Tolerans)</span>
+            <div class="num-wrap">
+              <input type="number" id="slotOffset" value="0.0" step="0.05" min="-2" max="2">
+              <div class="spin-col"><button class="spin-btn" data-target="slotOffset" data-dir="1">▲</button><button class="spin-btn" data-target="slotOffset" data-dir="-1">▼</button></div>
+            </div>
+          </div>
+          <div class="row">
+            <label class="row-left" style="cursor:pointer;">
+              <input type="checkbox" id="chkToolDia"> <span>Tool Diameter (CNC)</span>
+            </label>
+            <div class="num-wrap">
+              <input type="number" id="toolDia" value="4.0" step="0.5" min="0">
+              <div class="spin-col"><button class="spin-btn" data-target="toolDia" data-dir="1">▲</button><button class="spin-btn" data-target="toolDia" data-dir="-1">▼</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. KUTU: CONSTRUCTION TECHNIQUE -->
+    <div class="panel-box">
+      <div class="box-header static">
+        <div class="header-left"><span class="icon-slot">🔪</span> 3. Construction Technique</div>
+      </div>
+      <div class="box-body">
+        <select id="techSelect" style="width:100%;">
+          <option value="stacked">Stacked Slices (Üst Üste Katman)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 4. KUTU: MODIFY FORM (HOLLOW) -->
+    <div class="panel-box" id="boxModify">
+      <div class="box-header" onclick="toggleAccordion('boxModify')">
+        <div class="header-left"><span class="icon-slot">🐚</span> 4. Modify Form (Hollow)</div>
+        <span class="caret">▼</span>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <label class="row-left" style="cursor:pointer;">
+            <input type="checkbox" id="chkHollow"> <span>Hollow (İçini Boşalt - Parametrik)</span>
+          </label>
+        </div>
+        <div class="row">
+          <span>Wall Thickness (Kabuk)</span>
+          <div class="num-wrap">
+            <input type="number" id="hollowWall" value="12.0" step="1" min="2">
+            <div class="spin-col"><button class="spin-btn" data-target="hollowWall" data-dir="1">▲</button><button class="spin-btn" data-target="hollowWall" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. KUTU: DOWELS (HİZALAMA PİMLERİ) -->
+    <div class="panel-box" id="boxDowels">
+      <div class="box-header" onclick="toggleAccordion('boxDowels')">
+        <div class="header-left"><span class="icon-slot">📍</span> 5. Dowels (Hizalama Pimi)</div>
+        <span class="caret">▼</span>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <label class="row-left" style="cursor:pointer;">
+            <input type="checkbox" id="chkDowels"> <span>Dowels Aktif (Mavi Düzlem)</span>
+          </label>
+          <button class="btn btn-sec btn-xs" id="btnAutoDowel">Automatic</button>
+        </div>
+        <div class="row">
+          <span>Diameter (Pim Çapı)</span>
+          <div class="num-wrap">
+            <input type="number" id="dowelDia" value="11.0" step="0.5" min="1">
+            <div class="spin-col"><button class="spin-btn" data-target="dowelDia" data-dir="1">▲</button><button class="spin-btn" data-target="dowelDia" data-dir="-1">▼</button></div>
+          </div>
+        </div>
+        <div class="row">
+          <span>Shape (Kesit Şekli)</span>
+          <select id="dowelShape" style="width:110px;">
+            <option value="round">Round (Daire)</option>
+            <option value="square">Square (Kare)</option>
+          </select>
+        </div>
+        <div class="row" style="justify-content:flex-end; gap:6px;">
+          <button class="btn btn-sec btn-xs" id="btnDeleteDowel">Seçili Pimi Sil</button>
+          <button class="btn btn-sec btn-xs" id="btnClearDowels">Tümünü Temizle</button>
+        </div>
+        <div style="font-size:10px; color:#a1a1aa; line-height:1.35;">
+          💡 <strong>İpucu:</strong> 3D sahnedeki mavi düzleme tıklayarak yeni pim ekleyebilir, mevcut halkayı sürükleyerek taşıyabilirsiniz. En üst kapak katmanı delinmez.
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. KUTU: SLICE DIRECTION -->
+    <div class="panel-box collapsed" id="boxDirection">
+      <div class="box-header" onclick="toggleAccordion('boxDirection')">
+        <div class="header-left"><span class="icon-slot">🧭</span> 6. Slice Direction (Açı)</div>
+        <span class="caret">▼</span>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <span>Açı 1 (X Tilt °)</span>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <div class="num-wrap">
+              <input type="number" id="sliceAng1" value="0" step="5" min="-360" max="360">
+              <div class="spin-col"><button class="spin-btn" data-target="sliceAng1" data-dir="1">▲</button><button class="spin-btn" data-target="sliceAng1" data-dir="-1">▼</button></div>
+            </div>
+            <button class="btn btn-sec btn-xs" id="resetAng1" title="Sıfırla">↺</button>
+          </div>
+        </div>
+        <div class="row">
+          <span>Açı 2 (Y Roll °)</span>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <div class="num-wrap">
+              <input type="number" id="sliceAng2" value="0" step="5" min="-360" max="360">
+              <div class="spin-col"><button class="spin-btn" data-target="sliceAng2" data-dir="1">▲</button><button class="spin-btn" data-target="sliceAng2" data-dir="-1">▼</button></div>
+            </div>
+            <button class="btn btn-sec btn-xs" id="resetAng2" title="Sıfırla">↺</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. KUTU: ASSEMBLY STEPS -->
+    <div class="panel-box" id="boxAssembly">
+      <div class="box-header" onclick="toggleAccordion('boxAssembly')">
+        <div class="header-left"><span class="icon-slot">🪜</span> 7. Assembly Steps (Montaj)</div>
+        <span class="caret">▼</span>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <span>Adım Önizleme:</span>
+          <strong id="stepLabel" style="color:#f97316;">Tümü</strong>
+        </div>
+        <input type="range" id="assemblySlider" min="1" max="50" value="50">
+        <div class="row">
+          <label class="row-left" style="cursor:pointer;">
+            <input type="checkbox" id="chkExtrude3D" checked> <span>3D Katı Kalınlık Göster</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. KUTU: GET PLANS (SVG & NESTING) -->
+    <div class="panel-box" id="boxPlans">
+      <div class="box-header" onclick="toggleAccordion('boxPlans')">
+        <div class="header-left"><span class="icon-slot">📐</span> 8. Get Plans (Kesim Planı)</div>
+        <span class="caret">▼</span>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <span>Layout Arrangement</span>
+          <select id="layoutMode" style="width:140px;">
+            <option value="nested">Nested (İç İçe Sığdır)</option>
+            <option value="grid">Grid (Sıralı Diz)</option>
+          </select>
+        </div>
+        <div class="row">
+          <label class="row-left"><input type="checkbox" id="chkExportCut" checked> <span>Kesim Çizgisi (Kırmızı)</span></label>
+        </div>
+        <div class="row">
+          <label class="row-left"><input type="checkbox" id="chkExportGuide" checked> <span>Hizalama/Hayalet (Mavi Düz)</span></label>
+        </div>
+        <div class="row">
+          <label class="row-left"><input type="checkbox" id="chkExportLabel" checked> <span>Parça Numaraları</span></label>
+        </div>
+        <button class="btn" id="btnExportSvg" style="width:100%; margin-top:4px;">📥 Kesim Planını İndir (.SVG)</button>
+        <div class="row" style="font-size:11px; color:#a1a1aa; padding-top:4px;">
+          <span id="statParts">Parça: 0</span>
+          <span id="statSheets">Plaka: 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ORTA PANEL: 3D SAHNE ================= -->
+  <div id="viewport3d">
+    <div id="toolbar3d">
+      <button class="t-btn active" id="toolSelect">🖱️ Gezin</button>
+      <button class="t-btn" id="toolMove">✥ Taşı (T)</button>
+      <button class="t-btn" id="toolRotate">🔄 Döndür (R)</button>
+      <button class="t-btn" id="toolScale">📐 Ölçekle (S)</button>
+      <div class="t-sep"></div>
+      <button class="t-btn" id="toolLayFlat">⏬ Yüzeyi Yere Yatır (F)</button>
+      <button class="t-btn" id="toolDropBed">⬇️ Tablaya Oturt</button>
+    </div>
+
+    <div id="bannerMsg">🎯 Tablaya yatırmak istediğiniz yüzeye tıklayın (İptal: ESC)</div>
+    <div id="errorToast"></div>
+
+    <div class="footer-hint">
+      <strong>3D Sahne:</strong> Sol Tık: Kamera / Pim Seç | Sağ Tık: Kaydır | Tekerlek: Zoom | <strong>[F]</strong> Yüzeyi Yere Yatır
+    </div>
+  </div>
+
+  <!-- ================= SAĞ PANEL: 2D KESİM PLANI ================= -->
+  <div id="viewport2d">
+    <div class="panel2d-head">
+      <span>2D Kesim Planları (Bıçak İzi)</span>
+      <div class="legend">
+        <span><i class="dot" style="background:#ef4444;"></i>Kesim</span>
+        <span><i class="dot" style="background:#2563eb;"></i>Hizalama</span>
+        <span><i class="dot" style="background:#16a34a;"></i>Pim (Dowel)</span>
+      </div>
+    </div>
+    <div id="svgContainer"></div>
+  </div>
+
+<script>
+// =========================================================
+// YARDIMCI ARAYÜZ FONKSİYONLARI VE BİRİM SİSTEMİ
+// =========================================================
+function toggleAccordion(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorToast');
+  el.innerText = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+
+document.getElementById('btnToggleAdv').addEventListener('click', () => {
+  document.getElementById('advBox').classList.toggle('open');
+});
+
+// Birim Çevirici (Arka planda her şey mm tutulur)
+let currentUnit = 'mm';
+const unitFactors = { mm: 1, cm: 10, in: 25.4 };
+
+function toMM(val) { return (parseFloat(val) || 0) * unitFactors[currentUnit]; }
+function fromMM(mmVal, decimals = 2) {
+  const v = mmVal / unitFactors[currentUnit];
+  return Number(v.toFixed(decimals));
+}
+
+// Özel Dış Ok Butonları (Spinners)
+document.querySelectorAll('.spin-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.target);
+    if (!input) return;
+    const step = parseFloat(input.step) || 1;
+    const dir = parseInt(btn.dataset.dir) || 1;
+    const min = input.min !== '' ? parseFloat(input.min) : -Infinity;
+    const max = input.max !== '' ? parseFloat(input.max) : Infinity;
+    let next = (parseFloat(input.value) || 0) + step * dir;
+    next = Math.max(min, Math.min(max, Number(next.toFixed(3))));
+    input.value = next;
+    input.dispatchEvent(new Event('change'));
+  });
+});
+
+// =========================================================
+// 1. THREE.JS SAHNE KURULUMU
+// =========================================================
+const container3d = document.getElementById('viewport3d');
+const
