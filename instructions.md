@@ -9,8 +9,8 @@ Bu belge, **OpenSlicer Studio** projesini gelecekteki oturumlarda yapay zeka (AI
 ---
 
 ## 1. Proje Dosya Yapısı ve Kurallar
-* **Ana Uygulama Dosyası:** [SlicerStudio.html](file:///d:/Projeler/Open%20Slicer/SlicerStudio.html) (`6,759` satır)
-  * Proje **Single-File Application** (Tek Dosya HTML + CSS + JS) mimarisindedir. Harici derleyici/bundler (Webpack, Vite) kullanılmaz; doğrudan modern tarayıcılarda çalışır.
+* **Ana Uygulama Dosyası:** [index.html](file:///d:/Projeler/Open%20Slicer/index.html) (`6,843` satır)
+  * Proje **Single-File Application** (Tek Dosya HTML + CSS + JS) mimarisindedir. Harici derleyici/bundler (Webpack, Vite) kullanılmaz; doğrudan modern tarayıcılarda çalışır ve GitHub Pages ile tam uyumludur.
   * Bağımlılıklar CDN üzerinden yüklenir:
     * `Three.js r128` (`three.min.js`, `OrbitControls.js`, `TransformControls.js`, `STLLoader.js`, `OBJLoader.js`)
     * `JSZip 3.10.1` (`.3mf` okuma ve `.zip` toplu çıktı üretimi için)
@@ -27,17 +27,18 @@ Bu belge, **OpenSlicer Studio** projesini gelecekteki oturumlarda yapay zeka (AI
   * [OpenSlicerBridge.py](file:///d:/Projeler/Open%20Slicer/Fusion360_Plugin/OpenSlicerBridge/OpenSlicerBridge.py): Autodesk Fusion 360 Add-in scripti (Kullanıcının seçtiği klasöre `[Proje]-[Gövde].stl` adlandırmasıyla otomatik STL export).
   * [OpenSlicerBridge.manifest](file:///d:/Projeler/Open%20Slicer/Fusion360_Plugin/OpenSlicerBridge/OpenSlicerBridge.manifest): Fusion 360 eklenti manifesti.
   * [Install_OpenSlicerBridge.bat](file:///d:/Projeler/Open%20Slicer/Fusion360_Plugin/Install_OpenSlicerBridge.bat): Eklentiyi `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns\` dizinine yükleyen 1-tık kurulum betiği.
-* **Yedekleme Standardı:**
-  * Ana dosyada kapsamlı bir değişiklik yapmadan önce mevcut çalışan sürümü `SlicerStudio-backup-vX.html` olarak `./Backup` klasörüne kopyala (Şu an en son [SlicerStudio-backup-v13.html](file:///d:/Projeler/Open%20Slicer/Backup/SlicerStudio-backup-v13.html) mevcuttur; bir sonraki yedek `Backup/SlicerStudio-backup-v14.html` olmalıdır).
+* **Yedekleme Standardı (Zorunlu Kural):**
+  * Ana dosyada (`index.html`) kapsamlı bir değişiklik yapmadan önce mevcut çalışan sürümü `SlicerStudio-backup-vX.html` (veya `index-backup-vX.html`) olarak `./Backup` klasörüne kopyala (Şu an en son [SlicerStudio-backup-v14.html](file:///d:/Projeler/Open%20Slicer/Backup/SlicerStudio-backup-v14.html) mevcuttur; bir sonraki yedek `Backup/SlicerStudio-backup-v15.html` olmalıdır).
+  * **Kural:** Kullanıcı aksini söylemediği sürece her kod düzenlemesinden önce mutlaka bu yedekleme adımı uygulanır.
 * **Sözdizimi Doğrulaması (Syntax Check):**
   * Her kod düzenlemesinden sonra tarayıcıda test etmeden önce mutlaka Node.js ile hızlı sözdizimi kontrolü çalıştır:
     ```powershell
-    node -e "const fs = require('fs'); const html = fs.readFileSync('SlicerStudio.html', 'utf8'); const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]; const mainJs = scripts[scripts.length - 1][1]; new Function(mainJs); console.log('JS Syntax OK! Lines:', html.split('\n').length);"
+    node -e "const fs = require('fs'); const html = fs.readFileSync('index.html', 'utf8'); const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]; const mainJs = scripts[scripts.length - 1][1]; new Function(mainJs); console.log('JS Syntax OK! Lines:', html.split('\n').length);"
     ```
 
 ---
 
-## 2. Kod Haritası (Section Map — `SlicerStudio.html`)
+## 2. Kod Haritası (Section Map — `index.html`)
 Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm başlıklarını hedefle:
 
 1. **CSS Stilleri (`Lines 6–510`):**
@@ -47,12 +48,12 @@ Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm ba
    * Sol Menü Kutuları:
      * `Box 1`: Import, Presets & Universal Live Watch (`#presetSelect`, `#fileInput`, `#btnLiveWatchFile`, `#lblLiveWatchStatus`)
      * `Box 2`: Manufacturing Settings (`#unitSelect`, `#sheetW`, `#sheetH`, `#matThick`, `#skipCount`, `#sheetMargin`, `#slotOffset`, `#chkToolDia`, `#toolDia`)
-     * `Box 3`: Construction Technique (`#modeSelect` [`stacked` / `waffle` / `radial`], `#waffleBox`, `#radialBox` [`#radialFins`, `#radialRings`, `#radialCoreDia`])
+     * `Box 3`: Construction Technique (`#modeSelect` [`stacked` / `waffle` / `radial`], `#waffleBox`, `#radialBox` [`#radialCount`, `#radialRings`, `#radialCoreRadius`, `#radialCenterX`, `#radialCenterY`])
      * `Box 4`: Modify Form / Hollow (`#chkHollow`, `#hollowWall` — *Waffle ve Radial modlarında gizlenir*)
      * `Box 5`: Dowels / Pimler (`#chkDowels`, `#dowelShape`, `#dowelDia`, `#btnAutoDowel` — *Waffle ve Radial modlarında gizlenir*)
      * `Box 6`: Slice Direction (`#sliceAngX`, `#sliceAngY`, `#btnToggleSliceGimbal`)
      * `Box 7`: Assembly Steps & Preview (`#assemblySlider`, `#btnStepPrev`, `#btnStepNext`, `#btnStepPlay`, `#chkShowExtrude`)
-     * `Box 8`: Export Plans (`#layoutSelect`, `#exportFormatSelect`, `#chkSvgCut`, `#chkSvgGuide`, `#chkSvgLabel`, `#btnExportZip`, `#btnExportSingleMaster`)
+     * `Box 8`: Export Plans (`#layoutSelect`, `#exportFormatSelect`, `#chkSvgCut`, `#chkSvgGuide`, `#chkSvgLabel`, `#labelFontSize`, `#btnExportZip`, `#btnExportSingleMaster`)
    * Orta Viewport (`#viewport3d`): Üst Toolbar (`Move/Rotate/Scale/Lay-Flat/Measure`), Kamera/ViewCube Canvas (`#viewCubeCanvas`), Navigasyon Butonları (`#navBtnZoom`, `#navBtnPan`, `#navBtnFit`).
    * Sağ Panel (`#viewport2d`): Model Sorunları (`#issuesCard`) ve Parça Dizilimi (`#cutLayoutContainer`).
 3. **JS Bölüm 1–2 (`Lines 1160–1580`): UI Ayarları, Presets & 3B Sahne / Devasa CNC Ölçekleme:**
@@ -68,11 +69,12 @@ Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm ba
    * File System Access API (`window.showOpenFilePicker`) ile seçilen herhangi bir STL/OBJ dosyasının disk üzerindeki değişimini 850ms periyotla izler; dosya değiştiğinde kamera açısını, dönüşümleri ve dilimleme parametrelerini sıfırlamadan modeli anında günceller.
 7. **JS Bölüm 9–10 (`Lines 2830–4780`): ClipperLib Boolean, Dilimleme Motoru (`runSlicer`), Waffle & Radial Slices:**
    * `sliceMeshAtZ(geom, val, axis)`: 'z', 'x', 'y' ve polar 'radial' (`{ type: 'radial', cx, cy, cos, sin }`) kesitleri alır.
-   * **Radial Slices (`RS`):** Dikey ışınsal kanatlar (`R-1..R-n`) Clipper yarı-düzlem kesimi $[r_{\text{core}}, R_{\text{max}}]$ ile sınırlandırılır; yatay halkalar (`Z-1..Z-m`) dışarıdan açılan radyal slotlarla, kanatlar ise içeriden açılan yatay slotlarla kilitlenir. Açıdan bağımsız halving joint'ler, T-Bone/Dog-Bone ve Notch Factor giriş pahları uygulanır.
+   * **Radial Slices (`RS`):** Dikey ışınsal kanatlar (`R-1..R-n`) Clipper yarı-düzlem kesimi $[r_{\text{core}}, R_{\text{max}}]$ ile sınırlandırılır; `getAutoRadialCoreRadius` ile merkez fin çakışması trigonometrik olarak otomatik önlenir. Açıdan bağımsız halving joint'ler, T-Bone/Dog-Bone ve Notch Factor giriş pahları uygulanır.
 8. **JS Bölüm 11–13 (`Lines 4785–5765`): Dowels, Issues, 2B Nesting, DXF/SVG/EPS Export & Lightbox:**
    * `updateSliceColors()`: Cut Layout üzerinden gizlenen parçanın görünürlüğünü (`grp.visible = !excludedSliceIds.has(id)`) anında geri getiren koşul yapısı.
    * Çok katmanlı AutoCAD R12 (`AC1009`) uyumlu saf DXF (`POLYLINE` + `VERTEX`), orantılı Single-Line CNC Font (`SINGLE_LINE_FONT`).
-9. **JS Bölüm 14–16 (`Lines 5770–6618`): Assembly Steps, 3B Etkileşim & Event Loop:**
+   * `getSheetLabelFontSizes()` ve parça içi otomatik sığdırma (Auto-Fit Clamping).
+9. **JS Bölüm 14–16 (`Lines 5770–6843`): Assembly Steps, 3B Etkileşim & Event Loop:**
    * Kesintisiz slider, macenta çarpışma vurgusu ve Radial dilimler için $(\cos\theta_i, \sin\theta_i, 0)$ doğrultusunda radyal içeri kayma montaj animasyonu.
 
 ---
@@ -96,8 +98,7 @@ Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm ba
 1. **`P2+` Radial Slices (`RS` - Polar / Işınsal 3B Dilimleme):**
    * Arayüze `Radial Slices` üretim modu eklendi.
    * `R-1..R-n` dikey radyal kanatlar + `Z-1..Z-m` yatay halkalar ile kilitli montaj yapısı oluşturuldu.
-   * T-Bone, Dog-Bone ve Notch Factor giriş pahı desteği radyal geometriye tam entegre edildi.
-   * Montaj animasyonunda kanatların merkeze radyal kayması sağlandı.
+   * `getAutoRadialCoreRadius` ile merkez çakışmasını trigonometrik olarak otomatik önleyen dinamik yarıçap motoru eklendi.
 2. **Geniş Ölçekli CNC (5m–10m+ / 5000–10000mm+) Sahne & Grid Desteği:**
    * Sahne gridi, kamera near/far sınırları ve zemin ölçü çizgileri dinamik boyutlandırıldı; devasa modellerde Z-fighting önlendi.
 3. **ViewCube Titreme (Z-Fighting) Düzeltmesi:**
@@ -110,9 +111,13 @@ Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm ba
    * Tarayıcı üzerinden doğrudan diskteki STL/OBJ modelini izleyerek harici CAD programlarından aktarımı sıfır kurulumla canlı hale getirdi.
 7. **Kişisel Autodesk Fusion 360 Eklentisi (`OpenSlicerBridge`):**
    * Fusion 360'tan seçilen klasöre tek tıkla `[Proje]-[Gövde].stl` adıyla otomatik dışa aktarım sağlayan eklenti hazırlandı.
-8. **Üst Bar `beta 1.2` Rozeti & Buy Me a Coffee Desteği:**
-   * Üst bara versiyon rozeti ve Light Mode ile Help arasına Buy Me a Coffee butonu yerleştirildi.
-   * GNU GPLv3 lisans dosyası projeye eklendi.
+8. **Yazı Boyutları Düzeltmesi & Box 8 Label Size Kontrolü:**
+   * Plakaya orantılı devasa yazı hatası giderildi; gerçek imalat milimetrik yazı boyutuna (4.0mm) ve parça içi otomatik sınırlamaya (Auto-Fit Clamping) geçildi.
+   * Dairesel halka yuva yazılarına ışınsal açı desteği eklendi.
+9. **Klavye Gezintisi (TAB Tuşu):**
+   * Artırma/azaltma ve sıfırlama butonlarına `tabindex="-1"` atanarak form alanları arasında kesintisiz TAB geçişi sağlandı.
+10. **GitHub Pages ve index.html Geçişi:**
+    * Ana dosya `index.html` olarak adlandırıldı; GitHub Pages ve web sunucularında doğrudan yayına hazır hale getirildi.
 
 ---
 
@@ -131,3 +136,4 @@ Dosya içinde arama yaparken tüm dosyayı okumak yerine aşağıdaki bölüm ba
 * Dosya ve sembol referanslarında tıklanabilir markdown linkleri (`[dosya.uzanti](file:///...)`) kullan.
 * Kullanıcı *"kod yazma, önce konuşalım"* dediğinde hiçbir dosya düzenleme aracı çağırma; tasarımı ve mimariyi netleştir, kullanıcı onay verdiğinde toplu geçişle uygula.
 * **Sürüm numarasını** yalnızca kullanıcı açıkça talep ettiğinde arttır.
+* **Yedekleme Kuralı:** Kullanıcı aksini belirtmediği sürece ana dosyada (`index.html`) yapılacak her önemli düzenlemeden önce `./Backup` klasörüne çalışan son sürüm yedeklenir.

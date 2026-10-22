@@ -3,7 +3,7 @@
 [English Version](README.en.md) | **Türkçe Sürüm**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2--beta-green.svg)](SlicerStudio.html)
+[![Version](https://img.shields.io/badge/version-1.2--beta-green.svg)](index.html)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-yellow.svg?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/iSuat)
 
 **OpenSlicer Studio**, Autodesk® *Slicer for Fusion 360* (eski adıyla *123D Make*) uygulamasının modern, tarayıcı tabanlı (Zero-Install / Single-File HTML) yeniden yorumlanması ve geliştirilmiş açık mimarili alternatifidir. 3B modelleri (`.STL`, `.OBJ`, `.3MF`) lazer kesim, CNC router veya karton/ahşap maket üretimi için 2B kesim planlarına (`.DXF`, `.SVG`, `.EPS`) dönüştürür.
@@ -79,7 +79,7 @@ OrcaSlicer / Bambu Studio'nun modern 3B sahne araçlarını (*3B Dışbükey Zar
 
 ## ⚙️ Nasıl Çalışır? (Teknik Mimari)
 
-Uygulama hiçbir sunucu veya derleme (build) adımı gerektirmeyen **tek dosya (`SlicerStudio.html`)** mimarisiyle çalışır:
+Uygulama hiçbir sunucu veya derleme (build) adımı gerektirmeyen **tek dosya (`index.html`)** mimarisiyle çalışır:
 
 ```mermaid
 flowchart LR
@@ -200,4 +200,4 @@ Bu proje **GNU General Public License v3.0 (GPLv3)** ile lisanslanmıştır. Det
 ---
 
 ## 💻 Çalıştırma
-Herhangi bir kurulum veya derleme adımı gerektirmez. [SlicerStudio.html](file:///d:/Projeler/Open%20Slicer/SlicerStudio.html) dosyasını modern bir web tarayıcısında (Google Chrome, Microsoft Edge, Mozilla Firefox, Brave) doğrudan çift tıklayarak açabilirsiniz.
+Herhangi bir kurulum veya derleme adımı gerektirmez. [index.html](file:///d:/Projeler/Open%20Slicer/index.html) dosyasını modern bir web tarayıcısında (Google Chrome, Microsoft Edge, Mozilla Firefox, Brave) doğrudan çift tıklayarak açabilir veya GitHub Pages üzerinden çalıştırabilirsiniz.
