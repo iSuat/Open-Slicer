@@ -3,7 +3,7 @@
 **English Version** | [Türkçe Sürüm](README.md)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2--beta-green.svg)](SlicerStudio.html)
+[![Version](https://img.shields.io/badge/version-1.2--beta-green.svg)](index.html)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-yellow.svg?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/iSuat)
 
 **OpenSlicer Studio** is a modern, zero-install, browser-based (Single-File HTML) open-source reimagining and extension of Autodesk® *Slicer for Fusion 360* (formerly *123D Make*). It converts 3D models (`.STL`, `.OBJ`, `.3MF`) into fabrication-ready 2D cutting plans (`.DXF`, `.SVG`, `.EPS`) for laser cutters, CNC routers, and cardboard/wood physical model making.
@@ -80,7 +80,7 @@ It combines modern 3D scene workflows inspired by OrcaSlicer / Bambu Studio (*3D
 
 ## ⚙️ Technical Architecture
 
-OpenSlicer Studio operates as a standalone **single-file application (`SlicerStudio.html`)** without build steps:
+OpenSlicer Studio operates as a standalone **single-file application (`index.html`)** without build steps:
 
 ```mermaid
 flowchart LR
@@ -191,4 +191,4 @@ This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. 
 ---
 
 ## 💻 Running OpenSlicer Studio
-Requires no installation, server, or build step. Simply open [SlicerStudio.html](SlicerStudio.html) in any modern web browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Brave).
+Requires no installation, server, or build step. Simply open [index.html](index.html) in any modern web browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Brave) or run via GitHub Pages.
