@@ -106,6 +106,36 @@
     .top-icon-btn:disabled { opacity: 0.35; cursor: default; }
     .top-link { color: #cbd5e1; font-size: 11px; text-decoration: none; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
     .top-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .app-version-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      user-select: none;
+      line-height: 1.3;
+    }
+    .bmc-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .bmc-btn-img {
+      height: 24px;
+      width: auto;
+      border-radius: 4px;
+      display: block;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .bmc-link:hover .bmc-btn-img {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
 
     /* ==================== MAIN WORKSPACE (3 COLUMNS) ==================== */
     #workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
@@ -318,6 +348,58 @@
       border-radius: 10px; box-shadow: 0 18px 50px rgba(0,0,0,0.65);
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
+
+    /* Help & Open Source Credits Modal */
+    #helpModal {
+      position: absolute; inset: 0; z-index: 50;
+      background: rgba(10, 12, 16, 0.82); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      user-select: none;
+    }
+    #helpModal.open { display: flex; }
+    .help-modal-frame {
+      width: calc(100% - 90px); max-width: 680px; max-height: 85vh;
+      background: var(--bg-panel); border: 1px solid var(--border-input);
+      border-radius: 10px; box-shadow: 0 18px 50px rgba(0,0,0,0.65);
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+    .help-modal-header {
+      height: 42px; background: var(--bg-panel-header); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0;
+    }
+    .help-modal-title { font-size: 13px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .help-modal-body {
+      padding: 16px 20px; overflow-y: auto; color: var(--text-main); font-size: 11.5px; line-height: 1.5;
+    }
+    .help-sec { margin-bottom: 18px; }
+    .help-sec-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--accent-blue); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; margin-bottom: 8px;
+    }
+    .help-shortcut-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px;
+    }
+    .help-shortcut-item {
+      display: flex; align-items: center; gap: 8px; background: var(--bg-input);
+      padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); font-size: 11px;
+    }
+    .help-kbd {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px; padding: 1px 5px; font-family: monospace; font-weight: 700; color: #38bdf8; font-size: 10.5px;
+    }
+    .help-credits-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .help-credit-card {
+      background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; padding: 8px 10px;
+    }
+    .help-credit-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+    .help-credit-name { font-weight: 700; font-size: 11.5px; color: var(--text-main); }
+    .help-credit-badge {
+      font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+      background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .help-credit-desc { font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
     .lightbox-header {
       height: 40px; padding: 0 14px; background: var(--bg-panel-header);
       border-bottom: 1px solid var(--border-color);
@@ -493,6 +575,7 @@
         </div>
       </div>
       <div style="width:1px; height:18px; background:rgba(255,255,255,0.15); margin:0 4px;"></div>
+      <span class="app-version-badge" title="OpenSlicer Studio Version">beta 1.2</span>
       <button type="button" class="top-icon-btn" id="btnUndo" title="Undo" disabled>↶</button>
       <button type="button" class="top-icon-btn" id="btnRedo" title="Redo" disabled>↷</button>
     </div>
@@ -500,6 +583,7 @@
     <div class="topbar-right">
       <button type="button" class="top-icon-btn active" id="btnToggleGrid" title="Show / Hide 3D Grid"># Grid</button>
       <button type="button" class="top-icon-btn" id="btnThemeToggle" title="Switch Dark / Light Mode">☀️ Light Mode</button>
+      <a href="https://www.buymeacoffee.com/iSuat" target="_blank" rel="noopener noreferrer" class="bmc-link" title="Support OpenSlicer Studio on Buy Me a Coffee"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=iSuat&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" class="bmc-btn-img" /></a>
       <span class="top-link" id="btnHelpInfo" title="Keyboard Shortcuts & Help">? Help</span>
     </div>
   </header>
@@ -1054,6 +1138,83 @@
             <div id="lightboxStage"></div>
             <button type="button" class="lightbox-nav-arrow next" id="btnLightboxNext" title="Next Sheet (→)">▶</button>
             <div class="lightbox-hint">Mouse Wheel: Zoom to Cursor • Left Drag: Pan • ◀ / ▶: Switch Sheet • Click Outside or ESC: Close</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help & Open Source Credits Modal -->
+      <div id="helpModal">
+        <div class="help-modal-frame" id="helpModalFrame">
+          <div class="help-modal-header">
+            <div class="help-modal-title">
+              <span>◈ OpenSlicer Studio</span>
+              <span class="app-version-badge">beta 1.2</span>
+            </div>
+            <button type="button" class="lightbox-close-btn" id="btnHelpModalClose" title="Close Help (ESC)">✕</button>
+          </div>
+          <div class="help-modal-body">
+            <div class="help-sec">
+              <div class="help-sec-title">Keyboard Shortcuts / Klavye Kısayolları</div>
+              <div class="help-shortcut-grid">
+                <div class="help-shortcut-item"><span class="help-kbd">T</span> Move / Model Taşıma</div>
+                <div class="help-shortcut-item"><span class="help-kbd">R</span> Rotate / Döndürme Gimbalı</div>
+                <div class="help-shortcut-item"><span class="help-kbd">S</span> Scale / Boyutlandırma</div>
+                <div class="help-shortcut-item"><span class="help-kbd">F</span> Lay on Face / Yüzeye Oturt</div>
+                <div class="help-shortcut-item"><span class="help-kbd">ESC</span> Select Modu / Kapat</div>
+                <div class="help-shortcut-item"><span class="help-kbd">Del</span> Seçili Kavelayı Sil</div>
+                <div class="help-shortcut-item"><span class="help-kbd">Ctrl/Shift</span> Çoklu Parça Seçimi</div>
+                <div class="help-shortcut-item"><span class="help-kbd">Çift Tık</span> Plaka Tam Ekran Lightbox</div>
+              </div>
+            </div>
+
+            <div class="help-sec">
+              <div class="help-sec-title">Open Source Libraries & Licenses / Açık Kaynak Kütüphaneler</div>
+              <div class="help-credits-grid">
+                <div class="help-credit-card">
+                  <div class="help-credit-top">
+                    <span class="help-credit-name">Three.js (r128)</span>
+                    <span class="help-credit-badge">MIT</span>
+                  </div>
+                  <div class="help-credit-desc">3D WebGL render motoru, Orbit & Transform kontrolleri, STL/OBJ yükleyiciler ve ConvexHull geometrisi. (Ricardo Cabello / mrdoob)</div>
+                </div>
+                <div class="help-credit-card">
+                  <div class="help-credit-top">
+                    <span class="help-credit-name">ClipperLib (6.4.2)</span>
+                    <span class="help-credit-badge">BSL-1.0</span>
+                  </div>
+                  <div class="help-credit-desc">2B poligon Boolean işlemleri (ctDifference/ctUnion), PolyTree iç delik ayrıştırma ve ClipperOffset paralel oyma motoru. (Angus Johnson & Timo)</div>
+                </div>
+                <div class="help-credit-card">
+                  <div class="help-credit-top">
+                    <span class="help-credit-name">JSZip (3.10.1)</span>
+                    <span class="help-credit-badge">MIT / GPLv3</span>
+                  </div>
+                  <div class="help-credit-desc">.3MF proje/model arşivlerinin açılması ve çoklu plaka üretim planlarının .ZIP olarak paketlenmesi. (Stuart Knightley & Contributors)</div>
+                </div>
+                <div class="help-credit-card">
+                  <div class="help-credit-top">
+                    <span class="help-credit-name">Single-Line Vector Font</span>
+                    <span class="help-credit-badge">Public Domain</span>
+                  </div>
+                  <div class="help-credit-desc">Lazer kesim ve CNC kazımada çift hat kesmeden net parça ve yuva kılavuz etiketleri üreten tek çizgili vektör tipografisi.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-sec">
+              <div class="help-sec-title">Design Pedigree & Inspirations / İlham Kaynakları</div>
+              <div style="font-size:11px; color:var(--text-muted); line-height:1.45;">
+                • <b>Autodesk® Slicer for Fusion 360 (123D Make):</b> Yığma (Stacked), geçmeli ızgara (Waffle) ve ışınsal (Radial) dilimleme tekniklerinin üretim mantığı.<br>
+                • <b>OrcaSlicer / Bambu Studio / PrusaSlicer:</b> Dışbükey zarf ile yüzeye oturtma (Lay-on-Face), sabit çentikli iletki gimbalı ve koyu tema sahne ergonomisi.
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border-color); font-size:11px;">
+              <div>License: <b>GNU GPLv3</b> • Open Source Community</div>
+              <a href="https://www.buymeacoffee.com/iSuat" target="_blank" rel="noopener noreferrer" class="bmc-link" title="Buy me a coffee">
+                <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=iSuat&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" class="bmc-btn-img" style="height:22px;" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -6086,11 +6247,23 @@ document.getElementById('btnResetScale').addEventListener('click', (e) => { e.st
 document.getElementById('btnLayFlat').addEventListener('click', () => setTool(currentTool === 'layFlat' ? 'select' : 'layFlat'));
 document.getElementById('btnDropBed').addEventListener('click', () => { dropMeshToBed(true); bakeTransformAndReslice(true); });
 
-document.getElementById('btnHelpInfo').addEventListener('click', () => {
-  showError('Shortcuts: T = Move | R = Rotate | S = Scale | F = Lay Flat | Del = Delete Selected Dowel | ESC = Select');
+function openHelpModal() {
+  document.getElementById('helpModal').classList.add('open');
+}
+function closeHelpModal() {
+  document.getElementById('helpModal').classList.remove('open');
+}
+document.getElementById('btnHelpInfo').addEventListener('click', openHelpModal);
+document.getElementById('btnHelpModalClose').addEventListener('click', closeHelpModal);
+document.getElementById('helpModal').addEventListener('mousedown', (e) => {
+  if (e.target.id === 'helpModal') closeHelpModal();
 });
 
 window.addEventListener('keydown', (e) => {
+  const hm = document.getElementById('helpModal');
+  if (hm && hm.classList.contains('open')) {
+    if (e.key === 'Escape') { e.preventDefault(); closeHelpModal(); return; }
+  }
   const lb = document.getElementById('sheetLightbox');
   if (lb && lb.classList.contains('open')) {
     if (e.key === 'Escape') { e.preventDefault(); closeSheetLightbox(); return; }

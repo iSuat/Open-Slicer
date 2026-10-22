@@ -1,5 +1,11 @@
 # OpenSlicer Studio
 
+[English Version](README.en.md) | **Türkçe Sürüm**
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.2--beta-green.svg)](SlicerStudio.html)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-yellow.svg?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/iSuat)
+
 **OpenSlicer Studio**, Autodesk® *Slicer for Fusion 360* (eski adıyla *123D Make*) uygulamasının modern, tarayıcı tabanlı (Zero-Install / Single-File HTML) yeniden yorumlanması ve geliştirilmiş açık mimarili alternatifidir. 3B modelleri (`.STL`, `.OBJ`, `.3MF`) lazer kesim, CNC router veya karton/ahşap maket üretimi için 2B kesim planlarına (`.DXF`, `.SVG`, `.EPS`) dönüştürür.
 
 OrcaSlicer / Bambu Studio'nun modern 3B sahne araçlarını (*3B Dışbükey Zarf ile Yüzeye Oturtma*, *Sabit Çentikli İletki Gimbalı*) ve Autodesk Slicer'ın üretim odaklı dilimleme/geçme motorunu tek bir bağımsız dosyada birleştirir.
@@ -125,13 +131,14 @@ flowchart LR
   - [x] **Ana Ekranda Anında Çarpışma Vurgusu & Assembly Steps:** Birbirini engelleyen parçaların anında **parlak macenta (`#d946ef`)** rengiyle gösterilmesi ve kesintisiz slider animasyonu.
   - [x] Seçili Waffle dilimini komşu parçaların sınırları dahilinde (`Neighbor Clamping`) kaydırma ve parça bazlı sıfırlama.
   - [x] Tam ekran **Sheet Lightbox** ve orantılı **Single-Line (Tek Çizgi) CNC Vektör Font** (`SINGLE_LINE_FONT`).
-- [x] **P2+ (Faz 1) — Radial Slices, Canlı CAD İzleme & Devasa Sahne Desteği (v12):**
+- [x] **P2+ (Faz 1) — Radial Slices, Canlı CAD İzleme & Devasa Sahne Desteği (v1.2 Beta):**
   - [x] **Radial Slices (`RS`):** Dikey ışınsal kanatlar (`R-1..R-n`) + yatay dairesel halkalar (`Z-1..Z-m`), açıdan bağımsız slotlar ve radyal montaj animasyonu.
   - [x] **Geniş Ölçekli CNC (5m–10m+) Desteği:** Dinamik grid ölçekleme (50–500mm), adaptif kamera near/far ve taban ölçülendirmesi.
   - [x] **Evrensel Tarayıcı Dosya İzleyici (Universal Live File Watcher):** File System Access API ile CAD'den dışa aktarılan model dosyasını izleme ve parametreleri bozmadan canlı yeniden yükleme.
   - [x] **Autodesk Fusion 360 Add-in (`OpenSlicerBridge`):** `[Proje]-[Gövde].stl` adlandırmasıyla 1-tık otomatik dışa aktarım köprüsü.
   - [x] **ViewCube Flicker & Z-Fighting Düzeltmesi:** Yüz ve kenar koordinatlarının ayrıştırılması ile kırpışmasız görünüm küpü.
   - [x] **Cut Layout Görünürlük Düzeltmesi:** Gizlenen parçaların geri açıldığında 3B sahnede anında görünmesi.
+  - [x] **beta 1.2 Rozeti, Buy Me a Coffee Entegrasyonu ve GNU GPLv3 Lisansı.**
 
 ---
 
@@ -146,6 +153,49 @@ flowchart LR
     - [ ] Bounding-box yerine gerçek poligon nesting algoritması.
     - [ ] `runSlicer()` hesaplamalarının Web Worker arka plan iş parçacığına taşınması.
     - [ ] Üst menü araçları (`Move`/`Scale`) için OrcaSlicer tarzı modern 3B sahne tutamaçları (gizmolar).
+
+---
+
+## ☕ Destek (Support)
+OpenSlicer Studio açık kaynaklı ve topluluk için geliştirilen ücretsiz bir projedir. Geliştirmeyi desteklemek ve bir kahve ısmarlamak isterseniz:
+
+<a href="https://www.buymeacoffee.com/iSuat" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=iSuat&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee" width="210" style="max-width:210px;" />
+</a>
+
+---
+
+## 🙏 Teşekkürler ve Açık Kaynak Lisansları (Credits & Acknowledgments)
+
+OpenSlicer Studio, açık kaynak dünyasının güçlü kütüphaneleri ve algoritmik temelleri üzerinde inşa edilmiştir. Emeği geçen tüm geliştiricilere teşekkür ederiz:
+
+### Dahil Edilen Açık Kaynak Kütüphaneler:
+* **[Three.js](https://threejs.org/) (r128)** — *MIT License* (© Ricardo Cabello / mrdoob ve Three.js Katkıcıları)
+  * 3B sahne motoru, WebGL renderer, `OrbitControls`, `TransformControls`, `STLLoader`, `OBJLoader`, `ConvexHull` ve `ConvexGeometry`.
+* **[ClipperLib](https://sourceforge.net/projects/polyclipping/) (v6.4.2 JS Port)** — *Boost Software License 1.0 (BSL-1.0)* (© Angus Johnson & Timo)
+  * 2B çokgen Boolean birleşim/fark motoru (`ctDifference`, `ctUnion`), `PolyTree` delik tespiti ve `ClipperOffset` paralel kabuk oyma.
+* **[JSZip](https://stuk.github.io/jszip/) (v3.10.1)** — *MIT / GPLv3 Dual License* (© Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso)
+  * `.3mf` dosya paketlerinin okunması ve çoklu plaka üretim planlarının `.zip` olarak dışa aktarılması.
+
+### Algoritmik Referanslar & Tipografi:
+* **Single-Line Stroke Vector Font:** Lazer ve CNC kazıma için çift kontursuz tek çizgi vektör harf seti (Hershey Fonts & CNC Vektör Tipografisi).
+* **Pole of Inaccessibility:** Mapbox `polylabel` yaklaşımından esinlenen poligon içi akıllı etiket konumlandırma motoru.
+* **Monotone Chain & QuickHull:** A. M. Andrew (1979) ve Barber et al. (1996) dışbükey zarf algoritmaları.
+
+### Tasarım Mirası & İlham:
+* **Autodesk® Slicer for Fusion 360 (eski adıyla 123D Make):** Katmanlı yığma (`Stacked`), geçmeli ızgara (`Interlocked/Waffle`) ve ışınsal (`Radial`) dilimleme tekniklerinin temel üretim vizyonu.
+* **OrcaSlicer / Bambu Studio / PrusaSlicer:** Dışbükey zarf ile kararlı yüzeye oturtma (*Lay on Face*), sabit çentikli iletki gimbalı ve modern 3B sahne kontrolleri yaklaşımı.
+
+---
+
+## 📄 Lisans (License)
+Bu proje **GNU General Public License v3.0 (GPLv3)** ile lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına göz atabilirsiniz.
+
+---
+
+## ⚖️ Yasal Uyarı ve Ticari Markalar (Disclaimer & Trademarks)
+* **Autodesk®**, **Fusion 360®** ve **123D Make®**, Autodesk, Inc. şirketinin Amerika Birleşik Devletleri ve/veya diğer ülkelerdeki tescilli ticari markalarıdır.
+* **OpenSlicer Studio** tamamen bağımsız, açık kaynaklı bir topluluk projesidir. Autodesk, Inc. ile hiçbir resmi ilişkisi, sponsorluğu, ortaklığı veya onaylanmış bağı bulunmamaktadır. Referanslar yalnızca tanımlama ve geçmişe dönük uyumluluk/esinlenme amacıyla (*Nominative Fair Use*) kullanılmıştır.
 
 ---
 
